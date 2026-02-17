@@ -1,24 +1,17 @@
 
-document.addEventListener("DOMContentLoaded", () => {
-  const nav = document.getElementById('mobile-menu-button');
-const menu = document.getElementById('mobile-menu');
-nav.addEventListener('click', () => {
-  menu.classList.toggle('hidden');
-});
-});
 
-const loadTrendingProduct = ()=>{
- fetch("https://fakestoreapi.com/products")
+const loadAllProducts = () => {
+  fetch("https://fakestoreapi.com/products")
     .then((res) => res.json())
-    .then((data) => showTrendingProduct(data));
-}
+    .then((data) => displayProducts(data));
+};
 
-const showTrendingProduct=(products)=>{
-  const trendingProductDiv = document.getElementById('trending-product-parent')
-  console.log(trendingProductDiv)
-  products.slice(0,3).forEach(product => {
-    const productDiv = document.createElement('div')
-    productDiv.innerHTML = `<div class="border border-gray-100 rounded-xl overflow-hidden group hover:shadow-md transition">
+const displayProducts = (products) => {
+  const productDiv = document.getElementById("product-card-parent");
+  productDiv.innerHTML = "";
+  products.forEach((product) => {
+    const card = document.createElement("div");
+    card.innerHTML = `<div class="border border-gray-100 rounded-xl overflow-hidden group hover:shadow-md transition">
         <div class="bg-gray-50 h-64 flex items-center justify-center p-6">
           <img src="${product.image}" class="max-h-full mix-blend-multiply group-hover:scale-110 transition duration-500">
         </div>
@@ -29,7 +22,7 @@ const showTrendingProduct=(products)=>{
           </div>
           <h3 class="font-bold text-gray-800 text-sm truncate">${product.title}</h3>
           <p class="text-lg font-bold text-gray-900 mt-1 mb-4">${product.price}</p>
-           <div class="flex space-x-3">
+          <div class="flex space-x-3">
             <button class="flex-1 details-btn flex items-center justify-center border border-gray-200 py-2.5 rounded-lg text-sm font-semibold hover:bg-gray-50 transition">
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
               Details
@@ -40,17 +33,65 @@ const showTrendingProduct=(products)=>{
             </button>
           </div>
         </div>
-      </div>`
-      productDiv.querySelector(".details-btn").addEventListener("click", () => {
-      console.log("clicked"); 
+      </div>`;
+    card.querySelector(".details-btn").addEventListener("click", () => {
       openModal(product);
     });
-      trendingProductDiv.append(productDiv)
+    productDiv.append(card);
   });
-}
+};
+loadAllProducts();
 
-loadTrendingProduct()
+const getAllCategory = () => {
+  fetch("https://fakestoreapi.com/products/categories")
+    .then((res) => res.json())
+    .then((data) => showAllCategory(data));
+};
+const showAllCategory = (categories) => {
+  const categoryParent = document.getElementById("category-parent");
+  const allCategoryBtn = document.createElement("button");
+  allCategoryBtn.className =
+    "px-5 py-1.5 category-btn rounded-full border border-gray-200 category-active text-white text-sm font-medium hover:bg-gray-50 transition";
+  allCategoryBtn.textContent = "All";
+  allCategoryBtn.addEventListener("click", function () {
+    // Remove active class from all buttons
+    document
+      .querySelectorAll(".category-btn")
+      .forEach((btn) => btn.classList.remove("category-active", "text-white"));
 
+    // Add active class to clicked button
+    this.classList.add("category-active", "text-white");
+  });
+  categoryParent.append(allCategoryBtn);
+
+  categories.forEach((category) => {
+    const btn = document.createElement("button");
+
+    btn.className =
+      "px-5 py-1.5 category-btn rounded-full border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition";
+    btn.textContent = category;
+    btn.addEventListener("click", function () {
+      getProductByCategory(category, this);
+    });
+    categoryParent.append(btn);
+  });
+};
+getAllCategory();
+
+const getProductByCategory = (category, btn) => {
+  const url = `https://fakestoreapi.com/products/category/${category}`;
+  fetch(url)
+    .then((res) => res.json())
+    .then((data) => displayProducts(data));
+
+  // Remove active class from all buttons
+  document
+    .querySelectorAll(".category-btn")
+    .forEach((btn) => btn.classList.remove("category-active", "text-white"));
+
+  // Add active class to clicked button
+  btn.classList.add("category-active", "text-white");
+};
 
 // for modal
 const modal = document.getElementById("productModal");

@@ -1,0 +1,7 @@
+.active{
+    color: rgb(79 70 229) !important;
+    font-weight: bold;
+}
+.category-active{
+    background-color: #5542f6  !important;
+}
