@@ -54,6 +54,8 @@ const showAllCategory = (categories) => {
     "px-5 py-1.5 category-btn rounded-full border border-gray-200 category-active text-white text-sm font-medium hover:bg-gray-50 transition";
   allCategoryBtn.textContent = "All";
   allCategoryBtn.addEventListener("click", function () {
+loadAllProducts();
+
     // Remove active class from all buttons
     document
       .querySelectorAll(".category-btn")
